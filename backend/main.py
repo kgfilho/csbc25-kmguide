@@ -1,6 +1,7 @@
 import asyncio
 import io
 import json
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -11,11 +12,25 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from xhtml2pdf import pisa
 
 import agents
 
-app = FastAPI(title="KMGuide API")
+app = FastAPI(title="EDUC.AI API")
+
+# Fonte com cobertura Unicode ampla (acentos, travessões, aspas tipográficas),
+# necessária porque a fonte padrão (Helvetica) do xhtml2pdf exibe caracteres
+# ausentes como quadrados no PDF gerado.
+FONT_DIR = Path(__file__).parent / "assets" / "fonts"
+pdfmetrics.registerFont(TTFont("Vera", str(FONT_DIR / "Vera.ttf")))
+pdfmetrics.registerFont(TTFont("Vera-Bold", str(FONT_DIR / "VeraBd.ttf")))
+pdfmetrics.registerFont(TTFont("Vera-Italic", str(FONT_DIR / "VeraIt.ttf")))
+pdfmetrics.registerFont(TTFont("Vera-BoldItalic", str(FONT_DIR / "VeraBI.ttf")))
+pdfmetrics.registerFontFamily(
+    "Vera", normal="Vera", bold="Vera-Bold", italic="Vera-Italic", boldItalic="Vera-BoldItalic"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -93,7 +108,7 @@ class ExportPdfRequest(BaseModel):
 PDF_STYLE = """
 <style>
   @page { size: A4; margin: 2cm; }
-  body { font-family: Helvetica, sans-serif; font-size: 11pt; color: #1f2933; }
+  body { font-family: "Vera", sans-serif; font-size: 11pt; color: #1f2933; }
   h1 { color: #6d28d9; font-size: 20pt; }
   h2 { color: #6d28d9; font-size: 15pt; margin-top: 16pt; }
   h3 { font-size: 12.5pt; margin-top: 12pt; }

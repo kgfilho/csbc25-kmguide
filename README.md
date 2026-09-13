@@ -1,4 +1,4 @@
-# KMGuide — Guia de estudo personalizado com LLM e arquitetura multi-agente
+# EDUC.AI — Guia de estudo personalizado com LLM e arquitetura multi-agente
 
 Sistema de recomendação educacional que gera guias e planos de estudo personalizados
 usando LLMs (via [Groq](https://groq.com/)) orquestrados com [CrewAI](https://www.crewai.com/),

@@ -44,7 +44,7 @@ export default function App() {
     <div className="mx-auto min-h-screen max-w-4xl px-4 py-10">
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-          📚 KMGuide
+          📚 EDUC.AI
         </h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
           Guia e plano de estudos personalizados, gerados por agentes de IA
