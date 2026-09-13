@@ -3,15 +3,15 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { baixarPdf } from "../api";
 
-export default function MaterialResult({ content, plano, disciplina }) {
+export default function MaterialResult({ content, disciplina }) {
   const [baixando, setBaixando] = useState(false);
   const [erroDownload, setErroDownload] = useState("");
 
-  async function handleBaixarPlano() {
+  async function handleBaixarMaterial() {
     setBaixando(true);
     setErroDownload("");
     try {
-      await baixarPdf(plano, `Plano de Estudos - ${disciplina}`);
+      await baixarPdf(content, `Material de Estudos - ${disciplina}`);
     } catch (err) {
       setErroDownload(err.message);
     } finally {
@@ -21,15 +21,15 @@ export default function MaterialResult({ content, plano, disciplina }) {
 
   return (
     <div>
-      {plano && (
+      {content && (
         <div className="mb-4 flex items-center gap-3">
           <button
             type="button"
-            onClick={handleBaixarPlano}
+            onClick={handleBaixarMaterial}
             disabled={baixando}
             className="rounded-lg border border-purple-600 px-3 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-purple-950"
           >
-            {baixando ? "Gerando PDF..." : "⬇ Baixar Plano de Estudos (PDF)"}
+            {baixando ? "Gerando PDF..." : "⬇ Baixar Material Completo (PDF)"}
           </button>
           {erroDownload && <span className="text-sm text-red-600">{erroDownload}</span>}
         </div>

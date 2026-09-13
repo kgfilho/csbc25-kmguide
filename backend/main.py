@@ -65,7 +65,7 @@ async def gerar_material_stream(disciplina, assunto, topicos_str, horas, dias):
 # 🎥 Vídeos Educacionais
 {saida_youtube}
 """
-        yield sse_event("done", 100, "Processo concluído!", content=saida_completa, plano=saida_plano)
+        yield sse_event("done", 100, "Processo concluído!", content=saida_completa)
     except Exception as exc:
         yield sse_event("error", 0, f"Erro ao gerar material: {exc}")
 

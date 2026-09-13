@@ -29,15 +29,22 @@ export function gerarMaterial({ disciplina, assunto, topicos, horas, dias }, onE
  * Pede ao backend um PDF do conteúdo em Markdown informado e dispara o
  * download no navegador.
  */
-export async function baixarPdf(content, title = "Plano de Estudos") {
-  const response = await fetch(`${API_BASE_URL}/api/export-pdf`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content, title }),
-  });
+export async function baixarPdf(content, title = "Material de Estudos") {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/export-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, title }),
+    });
+  } catch {
+    throw new Error(
+      `Não foi possível conectar ao servidor (${API_BASE_URL}). Verifique se o backend está rodando.`,
+    );
+  }
 
   if (!response.ok) {
-    throw new Error("Não foi possível gerar o PDF.");
+    throw new Error(`Não foi possível gerar o PDF (HTTP ${response.status}).`);
   }
 
   const blob = await response.blob();
