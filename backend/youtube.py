@@ -1,16 +1,10 @@
 import os
 from googleapiclient.discovery import build
 
-# Obter a chave da API
-YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
-if not YOUTUBE_API_KEY:
-    raise ValueError("A chave da API do YouTube não foi encontrada nas variáveis de ambiente.")
 
-# Inicializar o cliente YouTube
 def get_youtube_client(chave_api):
     return build("youtube", "v3", developerKey=chave_api)
 
-youtube_client = get_youtube_client(YOUTUBE_API_KEY)
 
 def pesquisar_videos_youtube(consulta, num_resultados=5):
     """
@@ -23,6 +17,13 @@ def pesquisar_videos_youtube(consulta, num_resultados=5):
     Returns:
         list: Lista de dicionários contendo título, descrição, URL e canal.
     """
+    youtube_api_key = os.getenv("YOUTUBE_API_KEY")
+    if not youtube_api_key:
+        print("A chave da API do YouTube (YOUTUBE_API_KEY) não foi encontrada nas variáveis de ambiente.")
+        return []
+
+    youtube_client = get_youtube_client(youtube_api_key)
+
     try:
         requisicao = youtube_client.search().list(
             part="snippet",

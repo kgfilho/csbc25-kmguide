@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+crewai
+crewai-tools
+litellm
+openai
+groq
+python-dotenv
+google-api-python-client
