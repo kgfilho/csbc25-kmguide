@@ -1,13 +1,17 @@
 import asyncio
+import io
 import json
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+import markdown as markdown_lib
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
+from pydantic import BaseModel
+from xhtml2pdf import pisa
 
 import agents
 
@@ -21,10 +25,8 @@ app.add_middleware(
 )
 
 
-def sse_event(stage: str, progress: int, message: str = "", content: str | None = None) -> str:
-    payload = {"stage": stage, "progress": progress, "message": message}
-    if content is not None:
-        payload["content"] = content
+def sse_event(stage: str, progress: int, message: str = "", **extra) -> str:
+    payload = {"stage": stage, "progress": progress, "message": message, **extra}
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
@@ -63,7 +65,7 @@ async def gerar_material_stream(disciplina, assunto, topicos_str, horas, dias):
 # 🎥 Vídeos Educacionais
 {saida_youtube}
 """
-        yield sse_event("done", 100, "Processo concluído!", content=saida_completa)
+        yield sse_event("done", 100, "Processo concluído!", content=saida_completa, plano=saida_plano)
     except Exception as exc:
         yield sse_event("error", 0, f"Erro ao gerar material: {exc}")
 
@@ -80,6 +82,42 @@ async def generate(
         gerar_material_stream(disciplina, assunto, topicos, horas, dias),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+class ExportPdfRequest(BaseModel):
+    title: str = "Plano de Estudos"
+    content: str
+
+
+PDF_STYLE = """
+<style>
+  @page { size: A4; margin: 2cm; }
+  body { font-family: Helvetica, sans-serif; font-size: 11pt; color: #1f2933; }
+  h1 { color: #6d28d9; font-size: 20pt; }
+  h2 { color: #6d28d9; font-size: 15pt; margin-top: 16pt; }
+  h3 { font-size: 12.5pt; margin-top: 12pt; }
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0; }
+  th, td { border: 1px solid #999; padding: 4px 8px; font-size: 9.5pt; text-align: left; }
+  th { background-color: #f3e8ff; }
+  code { background-color: #f4f3ec; padding: 1px 4px; }
+</style>
+"""
+
+
+@app.post("/api/export-pdf")
+async def export_pdf(payload: ExportPdfRequest):
+    html_body = markdown_lib.markdown(payload.content, extensions=["tables"])
+    html = f"<html><head><meta charset='utf-8'>{PDF_STYLE}</head><body>{html_body}</body></html>"
+
+    pdf_buffer = io.BytesIO()
+    pisa.CreatePDF(html, dest=pdf_buffer, encoding="utf-8")
+
+    safe_filename = "".join(c if c.isalnum() or c in " -_" else "" for c in payload.title).strip() or "documento"
+    return Response(
+        content=pdf_buffer.getvalue(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{safe_filename}.pdf"'},
     )
 
 

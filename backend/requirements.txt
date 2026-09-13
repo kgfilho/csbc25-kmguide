@@ -7,3 +7,5 @@ openai
 groq
 python-dotenv
 google-api-python-client
+markdown
+xhtml2pdf

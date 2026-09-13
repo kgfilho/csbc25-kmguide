@@ -24,3 +24,29 @@ export function gerarMaterial({ disciplina, assunto, topicos, horas, dias }, onE
 
   return () => eventSource.close();
 }
+
+/**
+ * Pede ao backend um PDF do conteúdo em Markdown informado e dispara o
+ * download no navegador.
+ */
+export async function baixarPdf(content, title = "Plano de Estudos") {
+  const response = await fetch(`${API_BASE_URL}/api/export-pdf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content, title }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Não foi possível gerar o PDF.");
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${title}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}

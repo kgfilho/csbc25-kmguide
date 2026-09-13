@@ -9,6 +9,8 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
   const [content, setContent] = useState("");
+  const [plano, setPlano] = useState("");
+  const [disciplina, setDisciplina] = useState("");
   const [error, setError] = useState("");
 
   function handleSubmit(form) {
@@ -16,6 +18,8 @@ export default function App() {
     setProgress(0);
     setMessage("Iniciando...");
     setContent("");
+    setPlano("");
+    setDisciplina(form.disciplina);
     setError("");
 
     gerarMaterial(
@@ -25,6 +29,7 @@ export default function App() {
         setMessage(event.message);
         if (event.stage === "done") {
           setContent(event.content);
+          setPlano(event.plano);
           setStatus("done");
         } else if (event.stage === "error") {
           setError(event.message);
@@ -68,7 +73,7 @@ export default function App() {
 
         <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           {status === "done" ? (
-            <MaterialResult content={content} />
+            <MaterialResult content={content} plano={plano} disciplina={disciplina} />
           ) : (
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Preencha o formulário e clique em "Gerar Material" para ver aqui o seu
