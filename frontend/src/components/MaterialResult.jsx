@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { baixarPdf } from "../api";
 
@@ -36,7 +37,9 @@ export default function MaterialResult({ content, disciplina }) {
       )}
 
       <article className="prose prose-sm sm:prose-base max-w-none dark:prose-invert prose-a:text-purple-600">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+          {content}
+        </ReactMarkdown>
       </article>
     </div>
   );
