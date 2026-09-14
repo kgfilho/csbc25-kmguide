@@ -1,7 +1,23 @@
 .venv
 __pycache__/
 *.pyc
-.env
-.env.local
 .claude
 *.log
+
+# Segredos e credenciais - nunca versionar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*credentials*.json
+*service-account*.json
+client_secret*.json
+*.googleusercontent.com.json
