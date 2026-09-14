@@ -50,10 +50,11 @@ def gerar_motivacao():
             "- Um parágrafo inicial incentivando o estudante a seguir seus estudos.\n"
             "- Frases inspiradoras para manter o foco e a disciplina.\n"
             "- Um fechamento encorajador, reforçando a importância do esforço e da dedicação.\n\n"
-            "O texto deve ser positivo, motivador e adequado para estudantes de ensino médio."
+            "O texto deve ser positivo, motivador e adequado para estudantes de ensino médio. "
+            "O texto completo deve ter entre 150 e 200 palavras — nem mais curto, nem mais longo."
         ),
         agent=agent,
-        expected_output="Mensagem motivacional em markdown.",
+        expected_output="Mensagem motivacional em markdown, entre 150 e 200 palavras.",
     )
     return agent.execute_task(task)
 
@@ -71,24 +72,26 @@ def gerar_guia(disciplina, assunto, topicos):
             f"Crie um Guia de Estudos para {disciplina}, abordando {assunto} e os tópicos {topicos}. "
             "O guia deve seguir a seguinte estrutura e formatação:\n\n"
             f"## Guia de Estudos: {disciplina}\n\n"
-            "### Introdução\n"
+            "### Introdução (80 a 120 palavras)\n"
             "- Texto introdutório justificado sobre o tema, destacando sua importância e contexto.\n\n"
             "### Conceitos Fundamentais\n"
-            "- Explicação detalhada dos principais conceitos abordados, com exemplos práticos.\n"
-            "- Utilize listas não ordenadas para estruturar os conceitos.\n\n"
+            "- Explicação dos principais conceitos abordados, com exemplos práticos.\n"
+            "- Utilize listas não ordenadas para estruturar os conceitos, com no máximo 3 a 5 bullets por conceito.\n\n"
             "### Aplicações Práticas\n"
-            "- Explique como o tema se aplica no mundo real.\n"
-            "- Utilize exemplos concretos e listas para organizar as aplicações.\n\n"
+            "- Explique como o tema se aplica no mundo real, com 2 a 3 exemplos concretos por conceito.\n"
+            "- Utilize listas para organizar as aplicações.\n\n"
             "### Técnicas de Aprendizado e Dificuldades Comuns\n"
-            "- Apresente métodos eficazes para aprender o tema.\n"
-            "- Liste dificuldades comuns dos alunos e estratégias para superá-las.\n\n"
+            "- Apresente métodos eficazes para aprender o tema (3 a 5 bullets).\n"
+            "- Liste dificuldades comuns dos alunos e estratégias para superá-las (3 a 5 bullets).\n\n"
             "### Indicação de Materiais Gratuitos\n"
-            "- Forneça sugestões de livros, vídeos e artigos gratuitos sobre o tema.\n"
+            "- Forneça de 3 a 5 sugestões de livros, vídeos e artigos gratuitos sobre o tema.\n"
             "- Apresente os materiais em formato de lista com títulos e links quando possível.\n\n"
-            "O conteúdo deve ser didático, acessível para alunos do ensino médio e utilizar texto justificado sempre que possível."
+            "O conteúdo deve ser didático, acessível para alunos do ensino médio e utilizar texto justificado sempre "
+            "que possível. O guia completo (todas as seções somadas) deve ter entre 800 e 1200 palavras — respeite "
+            "esse limite para manter o material objetivo."
         ),
         agent=agent,
-        expected_output="Guia de estudos em markdown",
+        expected_output="Guia de estudos em markdown, entre 800 e 1200 palavras no total.",
     )
     return agent.execute_task(task)
 
@@ -107,32 +110,36 @@ def gerar_plano(disciplina, assunto, topicos, horas, dias):
             f"O aluno tem {horas} horas por dia e {dias} dias para estudar.\n\n"
             "O plano deve seguir esta estrutura e formatação:\n\n"
             f"## Plano de Estudos: {disciplina}\n\n"
-            "### Introdução\n"
+            "### Introdução (60 a 80 palavras)\n"
             "- Apresentação do objetivo do plano de estudos.\n"
             "- Importância da organização para otimizar o aprendizado.\n\n"
             "### Distribuição Equilibrada dos Tópicos\n"
-            "- Divisão dos conteúdos de forma proporcional ao tempo disponível.\n"
+            "- Divisão dos conteúdos de forma proporcional ao tempo disponível, em uma tabela com no máximo "
+            "4 blocos de atividade por dia (agrupe atividades curtas em vez de listar cada minuto separadamente).\n"
             "- Sugerir uma agenda diária/semanal equilibrada.\n\n"
             "### Técnicas Ativas de Aprendizado\n"
-            "- Explicação de estratégias eficazes para o estudo, incluindo:\n"
+            "- Explicação breve de estratégias eficazes para o estudo, incluindo:\n"
             "  - Resumos\n"
             "  - Flashcards\n"
             "  - Mapas mentais\n"
             "  - Resolução de exercícios\n\n"
             "### Revisões Programadas\n"
-            "- Definir períodos estratégicos para revisão de conteúdos.\n"
+            "- Definir períodos estratégicos para revisão de conteúdos (3 a 5 bullets).\n"
             "- Sugestão de técnicas como repetição espaçada e autoavaliação.\n\n"
             "### Monitoramento do Progresso\n"
-            "- Métodos para acompanhar a evolução do estudo.\n"
+            "- Métodos para acompanhar a evolução do estudo (3 a 5 bullets).\n"
             "- Uso de checklists ou aplicativos para organização.\n\n"
             "### Sugestões para Pausas e Evitar Sobrecarga Mental\n"
-            "- Importância das pausas regulares para manter a produtividade.\n"
-            "- Sugestão de técnicas como a Técnica Pomodoro.\n"
-            "- Dicas para manter o bem-estar mental durante os estudos.\n\n"
-            "O plano deve ser didático, bem estruturado e adaptável para alunos do ensino médio."
+            "- Importância das pausas regulares para manter a produtividade (3 a 5 bullets).\n"
+            "- Sugestão de técnicas como a Técnica Pomodoro.\n\n"
+            "O plano deve ser didático, bem estruturado e adaptável para alunos do ensino médio. O texto fora da "
+            "tabela (todas as seções somadas) deve ter entre 400 e 600 palavras — respeite esse limite."
         ),
         agent=agent,
-        expected_output="Plano de estudos estruturado em markdown",
+        expected_output=(
+            "Plano de estudos estruturado em markdown, com tabela de no máximo 4 blocos por dia e "
+            "texto de apoio entre 400 e 600 palavras."
+        ),
     )
     return agent.execute_task(task)
 
