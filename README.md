@@ -24,9 +24,12 @@ ferramenta de forma mais robusta aos alunos.
 
 - Geração de material personalizado com progresso em tempo real (SSE).
 - Conteúdo com tamanho e estrutura padronizados (veja a seção "Padrão de conteúdo" abaixo).
-- Download do material completo em **PDF** (motivação, guia, plano e vídeos), com fonte
-  com suporte a acentos, travessões e aspas tipográficas.
-- Curadoria de vídeos do YouTube com título e descrição em formatação padronizada.
+- Download do material completo em **PDF** (com fonte com suporte a acentos, travessões e
+  aspas tipográficas) ou em **Markdown** (gerado direto no navegador).
+- Curadoria de vídeos do YouTube e de artigos da Wikipedia, com título e descrição/trecho
+  em formatação padronizada.
+- Mensagens de erro traduzidas para avisos claros (limite de uso da API, falha de conexão etc.).
+- Tour guiado de primeiro uso, com botão para reabrir a qualquer momento.
 
 ## 🧠 Agentes Inteligentes
 
@@ -34,6 +37,7 @@ ferramenta de forma mais robusta aos alunos.
 2. **Especialista em Guia de Estudos** — cria um guia estruturado sobre a disciplina/assunto.
 3. **Especialista em Plano de Estudos** — cria um cronograma de estudos considerando tempo disponível.
 4. **Especialista em Curadoria de Vídeos** — busca e organiza vídeos do YouTube sobre o tema.
+5. **Especialista em Curadoria de Artigos** — busca e organiza artigos da Wikipedia em português sobre o tema.
 
 ## 📏 Padrão de conteúdo
 
@@ -46,10 +50,12 @@ explícitos de tamanho e estrutura:
 | Guia de Estudos | 800–1200 palavras no total, 3–5 bullets por conceito |
 | Plano de Estudos | Tabela com no máximo 4 blocos de atividade por dia, texto de apoio de 400–600 palavras |
 | Vídeos | Até 5 vídeos, título em maiúsculas e descrição com a primeira letra maiúscula |
+| Artigos da Wikipedia | Até 2 artigos por tópico, título em maiúsculas e trecho com a primeira letra maiúscula |
 
 ## 🛠️ Tecnologias
 
-- **Backend**: Python 3.11+, FastAPI, Uvicorn, CrewAI, Groq, YouTube Data API v3, xhtml2pdf (exportação em PDF)
+- **Backend**: Python 3.11+, FastAPI, Uvicorn, CrewAI, Groq, YouTube Data API v3, API pública
+  da Wikipedia, xhtml2pdf (exportação em PDF)
 - **Frontend**: React 19, Vite, Tailwind CSS v4, react-markdown
 
 > A exportação em PDF usa a fonte [Bitstream Vera](https://www.gnome.org/fonts/) (licença
@@ -78,6 +84,8 @@ Preencha o `.env` com suas chaves:
   e reduzir o risco de esbarrar no limite de requisições.
 - `YOUTUBE_API_KEY`: chave da [YouTube Data API v3](https://console.cloud.google.com/apis/library/youtube.googleapis.com).
 
+A busca de artigos na Wikipedia não precisa de chave — usa a API pública da Wikimedia.
+
 Suba a API:
 
 ```sh
@@ -104,10 +112,10 @@ com `VITE_API_BASE_URL=http://seu-backend:porta`.
 
 1. O aluno preenche o formulário (disciplina, assunto, tópicos, tempo diário e dias disponíveis).
 2. O frontend abre uma conexão SSE com `GET /api/generate` no backend.
-3. Os agentes são executados em sequência (motivação → guia → plano → vídeos), e cada
-   etapa concluída atualiza a barra de progresso em tempo real.
+3. Os agentes são executados em sequência (motivação → guia → plano → vídeos → artigos da
+   Wikipedia), e cada etapa concluída atualiza a barra de progresso em tempo real.
 4. Ao final, o aluno recebe o material completo renderizado em Markdown na tela, com a
-   opção de baixar tudo em PDF (`POST /api/export-pdf`).
+   opção de baixar tudo em PDF (`POST /api/export-pdf`) ou em Markdown (direto no navegador).
 
 ## 📌 Como Contribuir
 
