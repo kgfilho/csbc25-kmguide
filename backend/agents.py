@@ -12,12 +12,14 @@ from youtube import pesquisar_videos_youtube
 _crewai_cache.mark_cache_breakpoint = lambda message: message
 
 GROQ_API_KEY_01 = os.getenv("GROQ_API_KEY_01")
-GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02")
+# GROQ_API_KEY_02 é opcional: as duas chaves só existem para distribuir as
+# chamadas entre agentes e reduzir o risco de esbarrar no limite de requisições
+# de uma única conta Groq. Se não for definida, reaproveita a primeira chave.
+GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02") or GROQ_API_KEY_01
 
-if not GROQ_API_KEY_01 or not GROQ_API_KEY_02:
+if not GROQ_API_KEY_01:
     raise RuntimeError(
-        "Defina GROQ_API_KEY_01 e GROQ_API_KEY_02 nas variáveis de ambiente "
-        "(veja .env.example)."
+        "Defina GROQ_API_KEY_01 nas variáveis de ambiente (veja .env.example)."
     )
 
 # llama-3.3-70b-versatile foi descontinuado pela Groq em 16/08/2026;

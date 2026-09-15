@@ -68,7 +68,10 @@ cp .env.example .env
 
 Preencha o `.env` com suas chaves:
 
-- `GROQ_API_KEY_01` e `GROQ_API_KEY_02`: chaves da [Groq](https://console.groq.com/).
+- `GROQ_API_KEY_01`: chave da [Groq](https://console.groq.com/) (obrigatória).
+- `GROQ_API_KEY_02`: segunda chave da Groq (opcional). Se deixada em branco, os agentes
+  reaproveitam `GROQ_API_KEY_01`. As duas existem só para distribuir a carga entre contas
+  e reduzir o risco de esbarrar no limite de requisições.
 - `YOUTUBE_API_KEY`: chave da [YouTube Data API v3](https://console.cloud.google.com/apis/library/youtube.googleapis.com).
 
 Suba a API:
