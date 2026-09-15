@@ -17,9 +17,8 @@ substituída por essa arquitetura cliente/servidor para permitir disponibilizar 
 ferramenta de forma mais robusta aos alunos.
 
 > **Nota sobre o nome**: o link do código-fonte citado no artigo do CSBC 2025 continua no
-> ar, mas o projeto mudou de nome desde então — era **KMGuide** no artigo, passou a
-> **KMData** durante a evolução para o mestrado, e hoje se chama **EDUC.AI**. É o mesmo
-> projeto, apenas renomeado.
+> ar, mas o projeto mudou de nome desde então — era **KMGuide** no artigo, e hoje se
+> chama **EDUC.AI**. É o mesmo projeto, apenas renomeado.
 
 ## ✨ Funcionalidades
 
