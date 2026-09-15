@@ -51,7 +51,7 @@ export default function App() {
         </p>
       </header>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="flex flex-col gap-8">
         <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <StudyForm onSubmit={handleSubmit} disabled={status === "loading"} />
 

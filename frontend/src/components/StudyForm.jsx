@@ -4,8 +4,8 @@ const initialState = {
   disciplina: "Matemática",
   assunto: "Funções",
   topicos: "Função quadrática, Função exponencial, Função logarítmica",
-  horas: "2 horas",
-  dias: "5 dias",
+  horas: "2",
+  dias: "5",
 };
 
 export default function StudyForm({ onSubmit, disabled }) {
@@ -22,22 +22,40 @@ export default function StudyForm({ onSubmit, disabled }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <Field label="Disciplina" value={form.disciplina} onChange={handleChange("disciplina")} disabled={disabled} />
-      <Field label="Assunto" value={form.assunto} onChange={handleChange("assunto")} disabled={disabled} />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Disciplina" value={form.disciplina} onChange={handleChange("disciplina")} disabled={disabled} />
+        <Field label="Assunto" value={form.assunto} onChange={handleChange("assunto")} disabled={disabled} />
+      </div>
       <Field
         label="Tópicos (separados por vírgula)"
         value={form.topicos}
         onChange={handleChange("topicos")}
         disabled={disabled}
       />
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Tempo diário" value={form.horas} onChange={handleChange("horas")} disabled={disabled} />
-        <Field label="Quantos dias" value={form.dias} onChange={handleChange("dias")} disabled={disabled} />
+      <div className="grid grid-cols-2 gap-4 sm:max-w-xs">
+        <Field
+          label="Tempo diário (horas)"
+          type="number"
+          min="1"
+          max="24"
+          value={form.horas}
+          onChange={handleChange("horas")}
+          disabled={disabled}
+        />
+        <Field
+          label="Quantos dias"
+          type="number"
+          min="1"
+          max="90"
+          value={form.dias}
+          onChange={handleChange("dias")}
+          disabled={disabled}
+        />
       </div>
       <button
         type="submit"
         disabled={disabled}
-        className="mt-2 rounded-lg bg-purple-600 px-4 py-2.5 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-2 rounded-lg bg-purple-600 px-4 py-2.5 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50 sm:self-start sm:px-8"
       >
         {disabled ? "Gerando..." : "Gerar Material"}
       </button>
@@ -45,12 +63,14 @@ export default function StudyForm({ onSubmit, disabled }) {
   );
 }
 
-function Field({ label, value, onChange, disabled }) {
+function Field({ label, value, onChange, disabled, type = "text", min, max }) {
   return (
     <label className="flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
       {label}
       <input
-        type="text"
+        type={type}
+        min={min}
+        max={max}
         value={value}
         onChange={onChange}
         disabled={disabled}
