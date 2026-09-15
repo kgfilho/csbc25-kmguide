@@ -16,6 +16,14 @@ A interface original do protótipo usava [Gradio](https://www.gradio.app/); ela 
 substituída por essa arquitetura cliente/servidor para permitir disponibilizar a
 ferramenta de forma mais robusta aos alunos.
 
+## ✨ Funcionalidades
+
+- Geração de material personalizado com progresso em tempo real (SSE).
+- Conteúdo com tamanho e estrutura padronizados (veja a seção "Padrão de conteúdo" abaixo).
+- Download do material completo em **PDF** (motivação, guia, plano e vídeos), com fonte
+  com suporte a acentos, travessões e aspas tipográficas.
+- Curadoria de vídeos do YouTube com título e descrição em formatação padronizada.
+
 ## 🧠 Agentes Inteligentes
 
 1. **Motivador** — escreve uma mensagem motivacional para o estudante.
@@ -23,10 +31,26 @@ ferramenta de forma mais robusta aos alunos.
 3. **Especialista em Plano de Estudos** — cria um cronograma de estudos considerando tempo disponível.
 4. **Especialista em Curadoria de Vídeos** — busca e organiza vídeos do YouTube sobre o tema.
 
+## 📏 Padrão de conteúdo
+
+Para manter o material consistente entre gerações, os prompts dos agentes seguem limites
+explícitos de tamanho e estrutura:
+
+| Seção | Limite |
+|---|---|
+| Motivação | 150–200 palavras |
+| Guia de Estudos | 800–1200 palavras no total, 3–5 bullets por conceito |
+| Plano de Estudos | Tabela com no máximo 4 blocos de atividade por dia, texto de apoio de 400–600 palavras |
+| Vídeos | Até 5 vídeos, título em maiúsculas e descrição com a primeira letra maiúscula |
+
 ## 🛠️ Tecnologias
 
-- **Backend**: Python 3.11+, FastAPI, Uvicorn, CrewAI, Groq, YouTube Data API v3
+- **Backend**: Python 3.11+, FastAPI, Uvicorn, CrewAI, Groq, YouTube Data API v3, xhtml2pdf (exportação em PDF)
 - **Frontend**: React 19, Vite, Tailwind CSS v4, react-markdown
+
+> A exportação em PDF usa a fonte [Bitstream Vera](https://www.gnome.org/fonts/) (licença
+> livre, distribuída junto com o `reportlab`), embutida em `backend/assets/fonts/`, para
+> suportar acentos, travessões e aspas tipográficas corretamente.
 
 ## 🚀 Como rodar localmente
 
@@ -75,7 +99,8 @@ com `VITE_API_BASE_URL=http://seu-backend:porta`.
 2. O frontend abre uma conexão SSE com `GET /api/generate` no backend.
 3. Os agentes são executados em sequência (motivação → guia → plano → vídeos), e cada
    etapa concluída atualiza a barra de progresso em tempo real.
-4. Ao final, o aluno recebe o material completo renderizado em Markdown na tela.
+4. Ao final, o aluno recebe o material completo renderizado em Markdown na tela, com a
+   opção de baixar tudo em PDF (`POST /api/export-pdf`).
 
 ## 📌 Como Contribuir
 
