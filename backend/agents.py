@@ -144,8 +144,19 @@ def gerar_plano(disciplina, assunto, topicos, horas, dias):
     return agent.execute_task(task)
 
 
+def _padronizar_video(video):
+    """Normaliza a caixa do título (maiúsculas) e da descrição (só a
+    primeira letra maiúscula) antes de mandar para o agente, para que a
+    formatação fique consistente independente do que o LLM decidir fazer."""
+    titulo = video.get("Título", "").upper()
+    descricao = video.get("Descrição", "").strip()
+    if descricao:
+        descricao = descricao[:1].upper() + descricao[1:]
+    return {**video, "Título": titulo, "Descrição": descricao}
+
+
 def gerar_videos(assunto, solicitacao):
-    entrada_youtube = pesquisar_videos_youtube(solicitacao)
+    entrada_youtube = [_padronizar_video(v) for v in pesquisar_videos_youtube(solicitacao)]
 
     agent = Agent(
         role="Especialista em Curadoria de Vídeos Educacionais",
@@ -161,10 +172,18 @@ def gerar_videos(assunto, solicitacao):
             "por categorias, formatando-os em Markdown. As categorias devem ser baseadas no título do vídeo.\n\n"
             f"## Vídeos sobre {assunto}\n\n"
             "### Formato de saída\n"
-            "- Para cada vídeo, a saída deve seguir o formato abaixo:\n"
-            "  **[Título](URL)**\n\n  _Descrição_\n\n"
+            "- Para cada vídeo, a saída deve seguir EXATAMENTE este formato, com o título e a descrição em "
+            "linhas separadas (nunca na mesma linha):\n\n"
+            "  **[TÍTULO DO VÍDEO](URL)**\n"
+            "  Descrição do vídeo aqui.\n\n"
+            "- Exemplo concreto:\n\n"
+            "  **[COMO RESOLVER EQUAÇÕES DO 2º GRAU](https://www.youtube.com/watch?v=exemplo)**\n"
+            "  Aprenda o passo a passo da fórmula de Bhaskara com exemplos práticos.\n\n"
+            "- NÃO altere a caixa (maiúsculas/minúsculas) do título nem da descrição — eles já vêm formatados "
+            "corretamente (título em maiúsculas, descrição com a primeira letra maiúscula) e devem ser reproduzidos "
+            "exatamente como recebidos.\n"
             "- Se um vídeo não tiver descrição, substituir por '(Sem descrição disponível)'.\n"
-            "- Se houver mais de um vídeo, repetir a estrutura para cada um.\n"
+            "- Se houver mais de um vídeo, repetir a estrutura para cada um, com uma linha em branco entre eles.\n"
             "- Certifique-se de que a formatação Markdown esteja correta e bem organizada."
             "Caso um dos videos seja esse: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             "a saida deverá ser:"
