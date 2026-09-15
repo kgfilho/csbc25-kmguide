@@ -56,7 +56,7 @@ export default function App() {
           onClick={() => setTourNonce((n) => n + 1)}
           className="mt-3 rounded-full border border-purple-600 px-4 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 dark:hover:bg-purple-950"
         >
-          ❔ Como usar?
+          Como usar?
         </button>
       </header>
 
