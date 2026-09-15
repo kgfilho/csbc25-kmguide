@@ -1,4 +1,5 @@
 import os
+import re
 
 import crewai.llms.cache as _crewai_cache
 from crewai import Agent, LLM, Task
@@ -157,6 +158,18 @@ def _padronizar_video(video):
     return {**video, "Título": titulo, "Descrição": descricao}
 
 
+_PADRAO_TITULO_DESCRICAO = re.compile(r"(\*\*\[[^\]]*\]\([^)]*\)\*\*)[ \t]*\n?[ \t]*(\S)")
+
+
+def _forcar_quebra_apos_titulo(texto):
+    """Garante uma quebra de linha real (<br>) entre o título em negrito
+    e a descrição do vídeo, mesmo quando o LLM ignora a instrução do
+    prompt e escreve os dois na mesma linha (ou usa apenas uma quebra
+    simples de Markdown, que a maioria dos renderizadores trata como
+    espaço em vez de linha nova)."""
+    return _PADRAO_TITULO_DESCRICAO.sub(r"\1<br>\n\2", texto)
+
+
 def gerar_videos(assunto, solicitacao):
     entrada_youtube = [_padronizar_video(v) for v in pesquisar_videos_youtube(solicitacao)]
 
@@ -199,4 +212,4 @@ def gerar_videos(assunto, solicitacao):
         agent=agent,
         expected_output="Lista de vídeos organizados em Markdown.",
     )
-    return agent.execute_task(task)
+    return _forcar_quebra_apos_titulo(agent.execute_task(task))
