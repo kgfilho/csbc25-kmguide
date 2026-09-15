@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { gerarMaterial } from "./api";
 import MaterialResult from "./components/MaterialResult";
+import OnboardingTour from "./components/OnboardingTour";
 import ProgressBar from "./components/ProgressBar";
 import StudyForm from "./components/StudyForm";
 
@@ -11,6 +12,7 @@ export default function App() {
   const [content, setContent] = useState("");
   const [disciplina, setDisciplina] = useState("");
   const [error, setError] = useState("");
+  const [tourNonce, setTourNonce] = useState(0);
 
   function handleSubmit(form) {
     setStatus("loading");
@@ -42,13 +44,20 @@ export default function App() {
 
   return (
     <div className="mx-auto min-h-screen max-w-4xl px-4 py-10">
-      <header className="mb-8 text-center">
+      <header data-tour="header" className="mb-8 text-center">
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
           📚 EDUC.AI
         </h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
           Guia e plano de estudos personalizados, gerados por agentes de IA
         </p>
+        <button
+          type="button"
+          onClick={() => setTourNonce((n) => n + 1)}
+          className="mt-2 text-sm font-medium text-purple-600 underline-offset-2 hover:underline dark:text-purple-400"
+        >
+          ❔ Como usar?
+        </button>
       </header>
 
       <div className="flex flex-col gap-8">
@@ -68,7 +77,10 @@ export default function App() {
           )}
         </section>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <section
+          data-tour="resultado"
+          className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+        >
           {status === "done" ? (
             <MaterialResult content={content} disciplina={disciplina} />
           ) : (
@@ -80,6 +92,8 @@ export default function App() {
           )}
         </section>
       </div>
+
+      <OnboardingTour restartSignal={tourNonce} />
     </div>
   );
 }

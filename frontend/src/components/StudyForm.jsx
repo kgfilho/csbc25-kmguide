@@ -22,17 +22,19 @@ export default function StudyForm({ onSubmit, disabled }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div data-tour="disciplina-assunto" className="grid gap-4 sm:grid-cols-2">
         <Field label="Disciplina" value={form.disciplina} onChange={handleChange("disciplina")} disabled={disabled} />
         <Field label="Assunto" value={form.assunto} onChange={handleChange("assunto")} disabled={disabled} />
       </div>
-      <Field
-        label="Tópicos (separados por vírgula)"
-        value={form.topicos}
-        onChange={handleChange("topicos")}
-        disabled={disabled}
-      />
-      <div className="grid grid-cols-2 gap-4 sm:max-w-xs">
+      <div data-tour="topicos">
+        <Field
+          label="Tópicos (separados por vírgula)"
+          value={form.topicos}
+          onChange={handleChange("topicos")}
+          disabled={disabled}
+        />
+      </div>
+      <div data-tour="tempo" className="grid grid-cols-2 gap-4 sm:max-w-xs">
         <Field
           label="Tempo diário (horas)"
           type="number"
@@ -54,6 +56,7 @@ export default function StudyForm({ onSubmit, disabled }) {
       </div>
       <button
         type="submit"
+        data-tour="gerar"
         disabled={disabled}
         className="mt-2 rounded-lg bg-purple-600 px-4 py-2.5 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50 sm:self-start sm:px-8"
       >
