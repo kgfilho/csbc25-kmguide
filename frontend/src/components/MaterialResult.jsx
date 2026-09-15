@@ -2,13 +2,13 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { baixarPdf } from "../api";
+import { baixarMarkdown, baixarPdf } from "../api";
 
 export default function MaterialResult({ content, disciplina }) {
   const [baixando, setBaixando] = useState(false);
   const [erroDownload, setErroDownload] = useState("");
 
-  async function handleBaixarMaterial() {
+  async function handleBaixarPdf() {
     setBaixando(true);
     setErroDownload("");
     try {
@@ -20,17 +20,33 @@ export default function MaterialResult({ content, disciplina }) {
     }
   }
 
+  function handleBaixarMarkdown() {
+    setErroDownload("");
+    try {
+      baixarMarkdown(content, `Material de Estudos - ${disciplina}`);
+    } catch (err) {
+      setErroDownload(err.message);
+    }
+  }
+
   return (
     <div>
       {content && (
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
           <button
             type="button"
-            onClick={handleBaixarMaterial}
+            onClick={handleBaixarPdf}
             disabled={baixando}
             className="rounded-lg border border-purple-600 px-3 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-purple-950"
           >
             {baixando ? "Gerando PDF..." : "⬇ Baixar Material Completo (PDF)"}
+          </button>
+          <button
+            type="button"
+            onClick={handleBaixarMarkdown}
+            className="rounded-lg border border-purple-600 px-3 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 dark:hover:bg-purple-950"
+          >
+            ⬇ Baixar Material Completo (Markdown)
           </button>
           {erroDownload && <span className="text-sm text-red-600">{erroDownload}</span>}
         </div>

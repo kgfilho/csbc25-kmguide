@@ -4,6 +4,7 @@ import re
 import crewai.llms.cache as _crewai_cache
 from crewai import Agent, LLM, Task
 
+from wikipedia_search import pesquisar_wikipedia
 from youtube import pesquisar_videos_youtube
 
 # CrewAI injects a `cache_breakpoint` field into every message, but only Anthropic's
@@ -163,10 +164,10 @@ _PADRAO_TITULO_DESCRICAO = re.compile(r"(\*\*\[[^\]]*\]\([^)]*\)\*\*)[ \t]*\n?[ 
 
 def _forcar_quebra_apos_titulo(texto):
     """Garante uma quebra de linha real (<br>) entre o título em negrito
-    e a descrição do vídeo, mesmo quando o LLM ignora a instrução do
-    prompt e escreve os dois na mesma linha (ou usa apenas uma quebra
-    simples de Markdown, que a maioria dos renderizadores trata como
-    espaço em vez de linha nova)."""
+    e o texto que vem em seguida (descrição de vídeo ou trecho de artigo),
+    mesmo quando o LLM ignora a instrução do prompt e escreve os dois na
+    mesma linha (ou usa apenas uma quebra simples de Markdown, que a
+    maioria dos renderizadores trata como espaço em vez de linha nova)."""
     return _PADRAO_TITULO_DESCRICAO.sub(r"\1<br>\n\2", texto)
 
 
@@ -211,5 +212,55 @@ def gerar_videos(assunto, solicitacao):
         ),
         agent=agent,
         expected_output="Lista de vídeos organizados em Markdown.",
+    )
+    return _forcar_quebra_apos_titulo(agent.execute_task(task))
+
+
+def _padronizar_artigo(artigo):
+    """Mesma normalização aplicada aos vídeos (título em maiúsculas, trecho
+    com a primeira letra maiúscula), para manter a formatação consistente."""
+    titulo = artigo.get("Título", "").upper()
+    trecho = artigo.get("Trecho", "").strip()
+    if trecho:
+        trecho = trecho[:1].upper() + trecho[1:]
+    return {**artigo, "Título": titulo, "Trecho": trecho}
+
+
+def gerar_artigos(assunto, topicos):
+    entrada_wikipedia = [_padronizar_artigo(a) for a in pesquisar_wikipedia(topicos)]
+
+    agent = Agent(
+        role="Especialista em Curadoria de Artigos Educacionais",
+        goal="Organizar e formatar artigos da Wikipedia para complementar o aprendizado do estudante.",
+        backstory="Você é um especialista em curadoria de materiais educacionais, com experiência na seleção de artigos de referência para ensino.",
+        llm=groqllm2,
+        verbose=True,
+    )
+    task = Task(
+        description=(
+            f"Lista de artigos da Wikipedia: {entrada_wikipedia} "
+            "Você receberá uma lista de artigos extraída da API da Wikipedia em português. Sua tarefa é organizar "
+            "esses artigos em Markdown, de forma clara e educacional.\n\n"
+            f"## Artigos sobre {assunto}\n\n"
+            "### Formato de saída\n"
+            "- Para cada artigo, a saída deve seguir EXATAMENTE este formato, com o título e o trecho em "
+            "linhas separadas (nunca na mesma linha):\n\n"
+            "  **[TÍTULO DO ARTIGO](URL)**\n"
+            "  Trecho do artigo aqui.\n\n"
+            "- Exemplo concreto:\n\n"
+            "  **[FUNÇÃO QUADRÁTICA](https://pt.wikipedia.org/wiki/Fun%C3%A7%C3%A3o_quadr%C3%A1tica)**\n"
+            "  Uma função quadrática é uma função polinomial de grau dois.\n\n"
+            "- NÃO altere a caixa (maiúsculas/minúsculas) do título nem do trecho — eles já vêm formatados "
+            "corretamente (título em maiúsculas, trecho com a primeira letra maiúscula) e devem ser reproduzidos "
+            "exatamente como recebidos.\n"
+            "- Se um artigo não tiver trecho, substituir por '(Sem trecho disponível)'.\n"
+            "- Se houver mais de um artigo, repetir a estrutura para cada um, com uma linha em branco entre eles.\n"
+            "- Certifique-se de que a formatação Markdown esteja correta e bem organizada.\n"
+            "- Caso a lista de artigos esteja vazia ou não contenha resultados relevantes, a saída deve ser:\n"
+            "## Não foram encontrados artigos sobre o assunto\n"
+            "- Não invente artigos ou links que não estejam na lista recebida."
+        ),
+        agent=agent,
+        expected_output="Lista de artigos da Wikipedia organizados em Markdown.",
     )
     return _forcar_quebra_apos_titulo(agent.execute_task(task))

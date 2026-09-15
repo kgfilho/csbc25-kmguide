@@ -57,3 +57,19 @@ export async function baixarPdf(content, title = "Material de Estudos") {
   link.remove();
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Baixa o conteúdo em Markdown diretamente no navegador (sem chamar o
+ * backend — o texto já está disponível no cliente).
+ */
+export function baixarMarkdown(content, title = "Material de Estudos") {
+  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${title}.md`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}

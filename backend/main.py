@@ -47,6 +47,29 @@ def sse_event(stage: str, progress: int, message: str = "", **extra) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+def _mensagem_erro_amigavel(exc: Exception) -> str:
+    """Traduz os erros técnicos mais comuns da API da Groq em avisos claros
+    para o aluno, em vez do stack trace/JSON bruto da exceção."""
+    texto = str(exc)
+
+    if "rate_limit_exceeded" in texto or "RateLimitError" in texto:
+        return (
+            "A IA está recebendo muitas solicitações no momento (limite de uso da API "
+            "atingido). Aguarde cerca de 1 minuto e tente gerar o material novamente."
+        )
+    if "invalid_api_key" in texto or "Invalid API Key" in texto:
+        return (
+            "Chave de API inválida ou não configurada no servidor. Avise o "
+            "responsável pela aplicação para verificar as credenciais."
+        )
+    if "APIConnectionError" in texto or "Connection error" in texto:
+        return (
+            "Não foi possível conectar ao serviço de IA no momento. Verifique sua "
+            "conexão com a internet e tente novamente em instantes."
+        )
+    return f"Ocorreu um erro ao gerar o material. Tente novamente em alguns instantes. ({texto[:200]})"
+
+
 async def gerar_material_stream(disciplina, assunto, topicos_str, horas, dias):
     topicos = agents.processar_topicos(topicos_str)
     solicitacao = f"Disciplina: {disciplina}\nAssunto: {assunto}\nTópicos: {topicos}\n"
@@ -55,14 +78,17 @@ async def gerar_material_stream(disciplina, assunto, topicos_str, horas, dias):
         yield sse_event("motivacao", 10, "Criando mensagem motivacional...")
         saida_motivador = await asyncio.to_thread(agents.gerar_motivacao)
 
-        yield sse_event("guia", 35, "Gerando guia de estudos...")
+        yield sse_event("guia", 30, "Gerando guia de estudos...")
         saida_guia = await asyncio.to_thread(agents.gerar_guia, disciplina, assunto, topicos)
 
-        yield sse_event("plano", 60, "Criando plano de estudos...")
+        yield sse_event("plano", 50, "Criando plano de estudos...")
         saida_plano = await asyncio.to_thread(agents.gerar_plano, disciplina, assunto, topicos, horas, dias)
 
-        yield sse_event("videos", 85, "Buscando e organizando vídeos do YouTube...")
+        yield sse_event("videos", 70, "Buscando e organizando vídeos do YouTube...")
         saida_youtube = await asyncio.to_thread(agents.gerar_videos, assunto, solicitacao)
+
+        yield sse_event("artigos", 90, "Buscando e organizando artigos da Wikipedia...")
+        saida_wikipedia = await asyncio.to_thread(agents.gerar_artigos, assunto, topicos)
 
         saida_completa = f"""# 🎯 Motivação
 {saida_motivador}
@@ -81,10 +107,16 @@ async def gerar_material_stream(disciplina, assunto, topicos_str, horas, dias):
 
 # 🎥 Vídeos Educacionais
 {saida_youtube}
+
+---
+
+# 📜 Artigos da Wikipedia
+{saida_wikipedia}
 """
         yield sse_event("done", 100, "Processo concluído!", content=saida_completa)
     except Exception as exc:
-        yield sse_event("error", 0, f"Erro ao gerar material: {exc}")
+        print(f"Erro ao gerar material: {exc!r}")
+        yield sse_event("error", 0, _mensagem_erro_amigavel(exc))
 
 
 @app.get("/api/generate")
