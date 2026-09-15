@@ -54,7 +54,7 @@ export default function App() {
         <button
           type="button"
           onClick={() => setTourNonce((n) => n + 1)}
-          className="mt-2 text-sm font-medium text-purple-600 underline-offset-2 hover:underline dark:text-purple-400"
+          className="mt-3 rounded-full border border-purple-600 px-4 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50 dark:hover:bg-purple-950"
         >
           ❔ Como usar?
         </button>
